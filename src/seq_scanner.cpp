@@ -1,5 +1,7 @@
 #include <climits>
+#include <stdexcept>
 #include "seq_scanner.h"
+
 const int A_SEQ_SHIFT = 18;
 const int VAR_SHIFT   = 16;
 const uint64_t B_SEQ_MASK  = USHRT_MAX;
