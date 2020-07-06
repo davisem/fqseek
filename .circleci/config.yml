@@ -16,17 +16,17 @@ workflows:
         steps:
           - checkout
           - run:
-              name : SUDO
+              name: SUDO
               command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
           - run:
-              name : GCC
-              command : 'apt-get update && apt-get install -y gcc g++'
+              name: GCC
+              command: 'apt-get update && apt-get install -y gcc g++'
           - run:
-              name : Build
-              command : 'g++ -std=c++11 -o fqseek -I src src/fqseek.cpp src/seq_scanner.cpp src/util.cpp'
+              name: Build
+              command: 'g++ -std=c++11 -o fqseek -I src src/fqseek.cpp src/seq_scanner.cpp src/util.cpp'
           - run:
-              name : Build Tests
-              command : 'g++ -std=c++11 -o test_fqseek -I src src/seq_scanner.cpp src/util.cpp test/test_seq_scanner.cpp'
+              name: Build Tests
+              command: 'g++ -std=c++11 -o test_fqseek -I src src/seq_scanner.cpp src/util.cpp test/test_seq_scanner.cpp'
           - run:
-              name : Run Tests
-              command : './test_fqseek'
+              name: Run Tests
+              command: './test_fqseek'
