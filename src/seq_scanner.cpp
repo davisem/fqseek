@@ -1,5 +1,5 @@
 #include <climits>
-#include <exception>
+#include <stdexcept>
 #include "seq_scanner.h"
 
 const int A_SEQ_SHIFT = 18;
