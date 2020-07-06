@@ -14,7 +14,7 @@ You just ran your favorite variant calling program and expected to find your fav
 --------   *   --------   
 NNNNNNNN [var] NNNNNNNN
 ```
-The variant base `[var]`  must match exactly, but `fqseek` allows for an aribitrary number of mismatches in the `N` bases flanking the variant.
+The variant base `[var]`  must match exactly, but `fqseek` allows for a user-defined number of mismatches in the `N` bases flanking the variant.
 
 
 ## Method
