@@ -28,5 +28,5 @@ workflows:
               name : Build Tests
               command : 'g++ -std=c++11 -o test_fqseek -I src src/seq_scanner.cpp src/util.cpp test/test_seq_scanner.cpp'
           - run:
-            name : Run Tests
-            command : './test_fqseek'
+              name : Run Tests
+              command : './test_fqseek'
