@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------------
 // Compresses a sequence into a uint16_t. Returns false if an invalid base is
 // encountered. 
-
 bool squeeze(const char *seq, int nseq, uint16_t &squeezed)
 {
    if(nseq > MAX_SEQ_16)

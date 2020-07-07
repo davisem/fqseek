@@ -139,8 +139,10 @@ int main(int argc, char const *argv[])
          showUsage(argv[0]);
          return 1;
       }
+      
       SeqScaner scanner(input_seq);
       int numFound = 0;
+
       if (use_str)
       {
          numFound = processStr(scanner);
@@ -162,8 +164,6 @@ int main(int argc, char const *argv[])
             }
          }
       }
-      
-      
       report(max_distance, scanner.num_valid_windows, numFound);
    }
 
@@ -171,7 +171,5 @@ int main(int argc, char const *argv[])
    {
       std::cerr << e.what() << '\n';
    }
-   
-
    return 0;
 }

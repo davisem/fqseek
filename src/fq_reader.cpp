@@ -4,7 +4,6 @@
 
 //-----------------------------------------------------------------------------------
 // ctor
-
 FqReader::FqReader(std::string &filename) : 
    lineNum(0), line(nullptr), fp(nullptr), offset(0), reached_eof(false)
 {
@@ -18,7 +17,6 @@ FqReader::FqReader(std::string &filename) :
 //-----------------------------------------------------------------------------------
 // Retrieves the next sequence from from the internal buffer, 
 // and reports the sequence size. Returns false when EOF is reached.
-
 bool FqReader::getNext(char *&seq, int &size)
 {
    do
@@ -62,25 +60,26 @@ bool FqReader::getNext(char *&seq, int &size)
    
    return false;
 }
-//-----------------------------------------------------------------------------------
-// Refills the buffer, adjusting for any parital lines in the previous buffer that
-// were truncated before reached end of line.
+
 inline char *FqReader::endOfBuffer()
 {
    return buffer + offset + bytes_read;
 }
 
+//-----------------------------------------------------------------------------------
+// Refills the buffer, adjusting for any parital lines in the previous buffer that
+// were truncated before reached end of line.
 void FqReader::getNextBuffer()
 {
    bytes_read = fread(buffer + offset, sizeof(char), BUFFER_SIZE - offset, fp);
    reached_eof = offset + bytes_read < BUFFER_SIZE ? true : false;
    next = buffer;
 }
+
 //-----------------------------------------------------------------------------------
 // This is called when a line has been split across buffers. The length of the 
 // truncated line is calculated with pointer arithmetic, and coppied to the front
 // of the next buffer (which is actually the same buffer. The front gets overwritten).
-
 void FqReader::copyToFront(char *line)
 {
    offset = next - line;

@@ -12,8 +12,7 @@ const uint64_t B_SEQ_MASK  = USHRT_MAX;
 // 00000000 00000000 00000011 00000000 00000000  VAR_SHIFT (Shift the variant to the least significant 2 bits)
 
 //-----------------------------------------------------------------------------------
-// Ctor for the seq scanner.
-
+// Ctor
 SeqScaner::SeqScaner(const std::string &query_seq)
 {
    uint16_t a_seq = 0;
@@ -37,7 +36,6 @@ SeqScaner::SeqScaner(const std::string &query_seq)
 // Scans for the query sequence in the reference by left shifting the reference 
 // window and adding the next 2 bits. If the query is found, the position
 // of the last added base is returned. If no query is found, -1 is returned.
-
 int SeqScaner::scan(const char *ref_seq, int seq_size, int max_distance)
 {
    int idx = 0;
@@ -65,7 +63,6 @@ int SeqScaner::scan(const char *ref_seq, int seq_size, int max_distance)
 
 //-----------------------------------------------------------------------------------
 // Builds internal data structures for edit distances.
-
 void SeqScaner::buildDistances(uint16_t a_seq, uint16_t b_seq)
 {
    a_dist = new uint8_t[USHRT_MAX + 1];
@@ -80,7 +77,6 @@ void SeqScaner::buildDistances(uint16_t a_seq, uint16_t b_seq)
 
 //-----------------------------------------------------------------------------------
 // Queries for edit distance and returns the distance to the caller.
-
 inline int SeqScaner::getDistance(uint64_t window)
 {
    return a_dist[(window >> A_SEQ_SHIFT) & B_SEQ_MASK] + b_dist[window & B_SEQ_MASK];
@@ -88,7 +84,6 @@ inline int SeqScaner::getDistance(uint64_t window)
 
 //-----------------------------------------------------------------------------------
 // Shifts the current window, incorporating the next base.
-
 inline void SeqScaner::shiftWindow(uint64_t &window, int &n_valid, char c)
 {
    bool valid = true;
@@ -99,7 +94,6 @@ inline void SeqScaner::shiftWindow(uint64_t &window, int &n_valid, char c)
 
 //-----------------------------------------------------------------------------------
 // Checks if the base at the variant position matches the expected variant.
-
 inline bool SeqScaner::varIsValid(uint64_t window)
 {
    return (((window >> VAR_SHIFT) & MASK) == var);
