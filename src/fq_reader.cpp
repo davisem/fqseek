@@ -45,7 +45,7 @@ bool FqReader::getNext(char *&seq, int &size)
             ++lineNum;
          }
 
-      } while(next++ < buffer + offset + bytes_read);//until we reach the end of buffer
+      } while(next++ < endOfBuffer());//until we reach the end of buffer
       
       if (!reached_eof)
       {
@@ -65,6 +65,10 @@ bool FqReader::getNext(char *&seq, int &size)
 //-----------------------------------------------------------------------------------
 // Refills the buffer, adjusting for any parital lines in the previous buffer that
 // were truncated before reached end of line.
+inline char *FqReader::endOfBuffer()
+{
+   return buffer + offset + bytes_read;
+}
 
 void FqReader::getNextBuffer()
 {

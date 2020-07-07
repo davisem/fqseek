@@ -22,25 +22,35 @@ A C++11 is compiler is required to run `fqseek`
 * gcc 4.8+
 
 ### Build
+Use the [Meson Build System](https://mesonbuild.com/index.html).
+You will also need to install [ninja](https://ninja-build.org).
+```
+pip3 install meson
+pip3 install ninja
+```
+
+To build and install `fqseek`
 ```
 cd fqseek
-g++ -std=c++11 -O3 -o fqseek src/fqseek.cpp src/seq_scanner.cpp src/util.cpp
+meson --buildtype release build
+INSTALL_DIR=your_bin_path ninja -C build install
 ```
 
 ### Run
 ```
-Usage: ./fqseek fastq [OPTION...] > outfile
+fqseek
+Usage: fqseek fastq [OPTION...] > outfile
 ```
 
 ### Build and run the tests
 ```
-g++ -std=c++11 -O3 -o test_fqseek -I src src/seq_scanner.cpp src/util.cpp test/test_seq_scanner.cpp
+g++ -std=c++11 -o test_fqseek -I src src/seq_scanner.cpp src/util.cpp test/test_seq_scanner.cpp
 ./test_fqseek
 ```
 
 ### Run some small demo data
 ```
-./fqseek test/test.fq -n=2 -seq=GGTTCTAGAGAATCAGA
+fqseek test/test.fq -n=2 -seq=GGTTCTAGAGAATCAGA
 ```
 
 ## Method

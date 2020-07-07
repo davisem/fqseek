@@ -29,6 +29,7 @@ class FqReader
       FILE *fp;
       void copyToFront(char *line);
       void getNextBuffer();
+      char *endOfBuffer();
 };
 
 #endif
