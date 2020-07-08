@@ -33,7 +33,7 @@ To build and install `fqseek`
 ```
 cd fqseek
 meson --buildtype release build
-INSTALL_DIR=your_bin_path ninja -C build install
+ninja -C build install
 ```
 
 ### Run
