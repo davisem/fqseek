@@ -15,7 +15,7 @@ jobs:
           command: 'apt-get update && apt-get install -y gcc g++'
       - run:
           name: Build
-          command: 'g++ -std=c++11 -o fqseek -I src src/fqseek.cpp src/seq_scanner.cpp src/util.cpp'
+          command: 'g++ -std=c++11 -o fqseek -I src src/fq_reader.cpp src/fqseek.cpp src/seq_scanner.cpp src/util.cpp'
       - run:
           name: Build Tests
           command: 'g++ -std=c++11 -o test_fqseek -I src src/seq_scanner.cpp src/util.cpp test/test_seq_scanner.cpp'

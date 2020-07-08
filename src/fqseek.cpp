@@ -3,15 +3,17 @@
 #include <cctype>
 #include <limits>
 #include <string>
-
+#include <stdio.h>
+#include <stdlib.h>
 #include "seq_scanner.h"
+#include "fq_reader.h"
 #include "util.h"
 
 std::string input_file = "";
 std::string input_seq = "";
+bool use_buff = false;
 int max_distance = 0;
 const int MAX_KMER_SIZE = 32;
-  
 
 //-----------------------------------------------------------------------------------
 void showUsage(const char *progname)
@@ -24,6 +26,7 @@ void showUsage(const char *progname)
    << "the variant base of interest\n"
    << "                    flanked by 8 bases of context sequence on each side.\n"
    << " -n=N               Report all sequencing with substitution edit distance less than or equal to N.\n"
+   << " -buf               Use manual buffering. Better performance with very large files."
    << '\n';
 }
 
@@ -33,7 +36,7 @@ bool parseArgs(int argc, const char *argv[])
 {
    if (argc < 4)
       return false;
-   
+
    for (int i = 1; i < argc; ++i)
    {
       std::string arg = argv[i];
@@ -55,6 +58,10 @@ bool parseArgs(int argc, const char *argv[])
       }
       else if (arg.substr(1,2) == "n="  && isdigit(arg[3]))
          max_distance = std::stoi(arg.substr(3));
+      else if (arg.substr(1,3) == "buf")
+      {
+         use_buff = true;
+      }
       else
       {
          std::cerr << "Invalid arg:" << arg << '\n';
@@ -69,7 +76,6 @@ bool parseArgs(int argc, const char *argv[])
 // This is assumed to be the sequence.
 bool getNextSeq(std::ifstream &fastq, int &lineNum, std::string &buffer)
 {
-   
    while(std::getline(fastq, buffer, '\n'))
    {
       if ((lineNum++ & MASK) == 2)
@@ -83,7 +89,7 @@ bool getNextSeq(std::ifstream &fastq, int &lineNum, std::string &buffer)
 
 //-----------------------------------------------------------------------------------
 // Writes the found sequences to stdout with some annotations.
-void writeSeq(std::string &seq, int idx)
+void writeSeq(const char *seq, int idx)
 {
    int start_win = idx - WINDOW_SIZE;
    std::cout << std::string(start_win, ' ') << '|'
@@ -92,6 +98,28 @@ void writeSeq(std::string &seq, int idx)
              << seq << '\n';
 }
 
+int processStr(SeqScaner &scanner)
+{
+   std::ifstream infh;
+   int numFound = 0;
+   infh.open(input_file);
+   if (!infh.is_open())
+      throw std::runtime_error("Unable to open file");
+   
+   std::string seq;
+   int found = -1;
+   int lineNum = 1;
+   while(getNextSeq(infh, lineNum, seq))
+   {
+      found = scanner.scan(seq.c_str(), seq.size(), max_distance);
+      if (found > 0)
+      {
+         writeSeq(seq.c_str(), found);
+         ++numFound;
+      }
+   }
+   return numFound;
+}
 //-----------------------------------------------------------------------------------
 // Writes summary information to stdout
 void report(int max_distance, int numCandidates, int numFound)
@@ -112,26 +140,29 @@ int main(int argc, char const *argv[])
          return 1;
       }
       
-      std::ifstream fastq_fh;
-      fastq_fh.open(input_file);
-      if (!fastq_fh.is_open())
-         throw std::runtime_error("Unable to open " + input_file);
-      
       SeqScaner scanner(input_seq);
-
-      int linenum = 1;
-      int found = -1;
       int numFound = 0;
-      std::string seq;
 
-      while(getNextSeq(fastq_fh, linenum, seq))
+      if(use_buff)
       {
-         found = scanner.scan(seq.c_str(), seq.size(), max_distance);
-         if (found > 0)
+         FqReader buffered_reader(input_file);
+         char *seq;
+         int seq_size = 0;
+         int found = -1;
+         
+         while(buffered_reader.getNext(seq, seq_size))
          {
-            writeSeq(seq, found);
-            numFound++;
+            found = scanner.scan(seq, seq_size, max_distance);
+            if (found > 0)
+            {
+               writeSeq(seq, found);
+               ++numFound;
+            }
          }
+      }
+      else
+      {
+         numFound = processStr(scanner);
       }
       report(max_distance, scanner.num_valid_windows, numFound);
    }
@@ -140,7 +171,5 @@ int main(int argc, char const *argv[])
    {
       std::cerr << e.what() << '\n';
    }
-   
-
    return 0;
 }
