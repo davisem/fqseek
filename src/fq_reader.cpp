@@ -1,17 +1,35 @@
 #include "fq_reader.h"
 #include "util.h"
 #include <iostream>
-
+const int BUFFER_SIZE = 10000000;
 //-----------------------------------------------------------------------------------
 // ctor
 FqReader::FqReader(std::string &filename) : 
-   lineNum(0), line(nullptr), fp(nullptr), offset(0), reached_eof(false)
+   lineNum(0), line(nullptr), fp(nullptr), offset(0), buffer(nullptr)
 {
    fp = fopen(filename.c_str(), "r");
    if (!fp)
       throw std::runtime_error("Unable to open " + filename);
-   
+   buffer = new char[BUFFER_SIZE];
    getNextBuffer();
+}
+//-----------------------------------------------------------------------------------
+// alternate ctor. Fill the buffer from a string. The string must 
+// be smaller than the buffer, so no dynamic buffering is supported.
+
+FqReader::FqReader(char *string, int size) : 
+   lineNum(0), line(nullptr), fp(nullptr), offset(0), buffer(nullptr)
+{
+   if (size > BUFFER_SIZE)
+      throw std::runtime_error("String is larger than buffer");
+   
+   buffer = new char[BUFFER_SIZE];
+   for (int i = 0; i < size; ++i)
+      buffer[i] = string[i];
+   
+   bytes_read = size;
+   reached_eof = true;
+   next = buffer;
 }
 
 //-----------------------------------------------------------------------------------
@@ -29,7 +47,6 @@ bool FqReader::getNext(char *&seq, int &size)
             {
                line = ++next;
             }
-            
             else if ((lineNum & MASK) == 1)
             {
                *next = '\0'; //replace '\n' with null terminator
@@ -42,21 +59,13 @@ bool FqReader::getNext(char *&seq, int &size)
             }
             ++lineNum;
          }
+      } while(++next < endOfBuffer());
 
-      } while(next++ < endOfBuffer());//until we reach the end of buffer
-      
-      if (!reached_eof)
+      if (line)//the buffer ended, but we never reached the end of the line.
       {
-         if (line)//the buffer ended, but we never reached the end of the line.
-         {
-            copyToFront(line);//the truncated line gets copied to the front of the next buffer.
-         }
-         
-         getNextBuffer();
-         continue;
+         copyToFront(line);//the truncated line gets copied to the front of the next buffer.
       }
-   
-   } while(!reached_eof);
+   } while(getNextBuffer());
    
    return false;
 }
@@ -69,11 +78,15 @@ inline char *FqReader::endOfBuffer()
 //-----------------------------------------------------------------------------------
 // Refills the buffer, adjusting for any parital lines in the previous buffer that
 // were truncated before reached end of line.
-void FqReader::getNextBuffer()
+bool FqReader::getNextBuffer()
 {
+   if (!fp)
+      return false;
+
    bytes_read = fread(buffer + offset, sizeof(char), BUFFER_SIZE - offset, fp);
    reached_eof = offset + bytes_read < BUFFER_SIZE ? true : false;
    next = buffer;
+   return (bytes_read > 0);
 }
 
 //-----------------------------------------------------------------------------------
@@ -85,8 +98,13 @@ void FqReader::copyToFront(char *line)
    offset = next - line;
    for (int i = 0; i < offset; ++i)
    {
-      buffer[i] = *line;
-      ++line;
+      buffer[i] = line[i];
    }
    line = buffer;
+}
+
+void FqReader::printBuffer(int offset)
+{
+   for (int i = offset; i < BUFFER_SIZE; ++i)
+      std::cout << buffer[i];
 }

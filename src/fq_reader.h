@@ -2,7 +2,6 @@
 #define FQ_READER_H
 #include <string>
 
-const int BUFFER_SIZE = 1 << 20;
 //-----------------------------------------------------------------------------------
 // FqReader allows for better IO performance when reading large files such as fastqs.
 // It holds it's own internal data buffer, which is filled with a large chunk of the fastq
@@ -15,11 +14,16 @@ class FqReader
       bool reached_eof;
 
       FqReader(std::string &filename);
-      virtual ~FqReader() { }
+      FqReader(char *string, int size);
+      virtual ~FqReader() 
+      {
+         delete[] buffer;
+      }
       bool getNext(char *&seq, int &size);
+      void printBuffer(int offset);
 
    private:
-      char buffer[BUFFER_SIZE];
+      char *buffer;
       int offset;
       int bytes_read;
       int lineNum;
@@ -27,7 +31,7 @@ class FqReader
       char *next;
       FILE *fp;
       void copyToFront(char *line);
-      void getNextBuffer();
+      bool getNextBuffer();
       char *endOfBuffer();
 };
 

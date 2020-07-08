@@ -37,8 +37,7 @@ inline uint8_t twoBit(char c, bool &valid)
 //-----------------------------------------------------------------------------------
 // Calculates the hamming distance between two, 2bit sequences.
 inline int twoBitHamming(uint16_t a, uint16_t b)
-{
-   
+{ 
    if (a == b)
       return 0;
    

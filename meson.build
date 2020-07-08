@@ -16,7 +16,8 @@ fqseek_tests = files([
    'src/fq_reader.cpp', 
    'src/seq_scanner.cpp', 
    'src/util.cpp', 
-   'test/test_seq_scanner.cpp'
+   'test/test_seq_scanner.cpp',
+   'test/test_fq_reader.cpp'
 ])
 
 executable('fqseek', [fqseek_srcs], 
