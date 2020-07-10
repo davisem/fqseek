@@ -7,7 +7,7 @@
 
 
 ## Motivation
-You just ran your favorite variant calling program and expected to find your favorite variant called in the results. But your variant wasn't called. Where to being? A good place to start looking might be the unaligned, input sequence. `fqseek` can searches fastq files for a variant with 16 base pairs of context sequence, allowing for fuzz.
+You just ran your favorite variant calling program and expected to find a certain variant in the results. But the variant wasn't called. Where to being? A good place to start looking might be the unaligned, input sequence. `fqseek` searches fastq files for a variant with 16 base pairs of context sequence.
 
 ```
   A seq          B seq
